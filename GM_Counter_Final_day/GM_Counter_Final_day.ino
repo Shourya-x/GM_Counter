@@ -56,7 +56,10 @@ void setup() {
   multiplier = oneMinute / integratingTime;
   previousMillis = millis();
 
+  // UNCOMMENT THE LINE NUMBER 61 IF EVERY THING WORKS FINE , IF NOT COMMENT THE LINE AND UNCOMMENT THE LINE NUMBER 62
+  
   pinMode(geigerPin, INPUT);
+  //pinMode(geigerPin, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(geigerPin), tube_impulse, FALLING);
 }
 
