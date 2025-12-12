@@ -110,19 +110,19 @@ void loop() {
 
     display.display();
 
-        // ----- Serial logging -----
-    Serial.print(currentMillis);
+    // ----- Serial logging -----
+    Serial.println(currentMillis);
     Serial.print(",");
-    Serial.print(cpm, 2);
+    Serial.println(cpm, 2);
     Serial.print(",");
-    Serial.print(uSv, 4);
+    Serial.println(uSv, 4);
     Serial.print(",");
-    Serial.print(avgCPM, 2);
+    Serial.println(avgCPM, 2);
     Serial.print(",");
-    Serial.print(avgUSV, 4);
+    Serial.println(avgUSV, 4);
     Serial.print(",");
     Serial.println(events);
-    
+
     counts = 0;
   }
 }
