@@ -22,7 +22,6 @@ double sumCPM = 0;
 double sumUSV = 0;
 double uSv = 0;
 
-// Center text helper
 void centeredPrint(const char* text, int y) {
   int len = strlen(text);
   int x = (84 - (len * 6)) / 2;
@@ -36,18 +35,20 @@ void ICACHE_RAM_ATTR tube_impulse() {
 }
 
 void setup() {
+  Serial.begin(115200);   // <--- important for Serial Plotter
+  delay(200);
+
   display.begin();
   display.setContrast(33);
   display.clearDisplay();
   display.setTextSize(1);
   display.setTextColor(BLACK);
 
-  // -------- Boot screen exactly as requested --------
-  centeredPrint("Geiger-Muller", 0);    // row 1
-  centeredPrint("Counter", 8);         // row 2
-  centeredPrint("Ready For", 16); // row 3
-  centeredPrint("Radiation", 24);     // row 4
-  centeredPrint("Detection", 32);     // row 5
+  centeredPrint("Geiger-Muller", 0);
+  centeredPrint("Counter", 8);
+  centeredPrint("Ready For", 16);
+  centeredPrint("Radiation", 24);
+  centeredPrint("Detection", 32);
   display.display();
   delay(2500);
 
@@ -56,10 +57,8 @@ void setup() {
   multiplier = oneMinute / integratingTime;
   previousMillis = millis();
 
-  // UNCOMMENT THE LINE NUMBER 61 IF EVERY THING WORKS FINE , IF NOT COMMENT THE LINE AND UNCOMMENT THE LINE NUMBER 62
-  
   pinMode(geigerPin, INPUT);
-  //pinMode(geigerPin, INPUT_PULLUP);
+  // pinMode(geigerPin, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(geigerPin), tube_impulse, FALLING);
 }
 
@@ -78,50 +77,48 @@ void loop() {
     avgCPM = sumCPM / avgCounts;
     avgUSV = sumUSV / avgCounts;
 
+    // ---------- Display ----------
     display.clearDisplay();
     display.setTextSize(1);
     display.setTextColor(BLACK);
 
-    // Row 1: GM Counter title
     centeredPrint("GM Counter", 0);
 
-    // Row 2: header
     display.setCursor(0, 8);
     display.print("CPM     uSv/h");
 
-    // Row 3: N line (current)
     display.setCursor(0, 16);
     display.print("N ");
-    display.print(cpm, 2);        // e.g. 44.25
-    display.setCursor(48, 16);    // fixed column for uSv/h
-    display.print(uSv, 4);        // e.g. 0.0728
+    display.print(cpm, 2);
+    display.setCursor(48, 16);
+    display.print(uSv, 4);
 
-    // Row 4: A line (average)
     display.setCursor(0, 24);
     display.print("A ");
-    display.print(avgCPM, 2);     // e.g. 55.27
+    display.print(avgCPM, 2);
     display.setCursor(48, 24);
-    display.print(avgUSV, 4);     // e.g. 0.0915
+    display.print(avgUSV, 4);
 
-    // Row 5: counts
     display.setCursor(0, 36);
     display.print("Counts: ");
     display.print(events);
 
     display.display();
 
-    // ----- Serial logging -----
-    Serial.println(currentMillis);
+    // ---------- Serial Plotter ----------
+    // One line per time-step, values separated by commas:
+    // time, cpm, uSv, avgCPM, avgUSV, events
+    Serial.print(currentMillis);
     Serial.print(",");
-    Serial.println(cpm, 2);
+    Serial.print(cpm, 2);
     Serial.print(",");
-    Serial.println(uSv, 4);
+    Serial.print(uSv, 4);
     Serial.print(",");
-    Serial.println(avgCPM, 2);
+    Serial.print(avgCPM, 2);
     Serial.print(",");
-    Serial.println(avgUSV, 4);
+    Serial.print(avgUSV, 4);
     Serial.print(",");
-    Serial.println(events);
+    Serial.println(events);   // println ends the line -> new plot sample
 
     counts = 0;
   }
